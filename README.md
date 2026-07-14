@@ -1,4 +1,5 @@
 # ClaimSphere
+Enterprise-grade Insurance Claims Management System built with Spring Boot, Spring Security, JWT &amp; OAuth2.
 
 ClaimSphere is an enterprise-grade Insurance Claims Management System built with **Java 21** and **Spring Boot 3**. The project is designed to demonstrate production-ready backend development practices including authentication, authorization, REST APIs, Spring Security, JWT, OAuth2, and clean architecture.
 
