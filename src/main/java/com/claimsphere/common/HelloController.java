@@ -1,13 +1,10 @@
 package com.claimsphere.common;
 
 import com.claimsphere.auth.repository.AppUserRepository;
-import com.claimsphere.security.AppUserPrincipal;
+import com.claimsphere.common.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +16,15 @@ public class HelloController {
     private AppUserRepository appUserRepository;
 
     @GetMapping("/hello")
-    public String hello() {
-        return "Hello from ClaimSphere!";
+    public ResponseEntity<ApiResponse<String>> hello() {
+
+        ApiResponse<String> response = ApiResponse.<String>builder()
+                .success(true)
+                .message("Request successful")
+                .data("Hello from ClaimSphere!")
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/hello1")

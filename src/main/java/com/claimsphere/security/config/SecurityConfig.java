@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 "/auth/login")
                         .permitAll()
 
-                        .requestMatchers("/oauth2/**","/login/**")
+                        .requestMatchers("/oauth2/**","/login/**", "/api/hello")
                         .permitAll()
 
                         .requestMatchers("/admin/**")
