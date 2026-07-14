@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2AuthenticationSuccessHandler
         implements AuthenticationSuccessHandler {
 
@@ -48,8 +50,7 @@ public class OAuth2AuthenticationSuccessHandler
 
         //response.getWriter().write(accessToken);
 
-        System.out.println("Generated Access Token: " + accessToken);
-
+        log.info("Generated Access Token: ");
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
