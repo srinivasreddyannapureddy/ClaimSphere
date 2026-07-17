@@ -55,7 +55,10 @@ ClaimSphere is an enterprise-grade Insurance Claims Management System built with
 * Authentication APIs
 * Secure Endpoints
 * Validation
-* 
+* Specification
+* DTOs for Request & Response
+* Error Handling
+
 ### Architecture
 
 * Package-by-Feature
