@@ -6,21 +6,26 @@ import com.claimsphere.auth.repository.AppUserRepository;
 import com.claimsphere.auth.service.AppUserService;
 import com.claimsphere.auth.specification.AppUserSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
 
     @Override
+    @Cacheable(value = "AppUser", key = "#request.toString() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<AppUser> searchUsers(AppUserSearchRequest request,
                                      Pageable pageable) {
 
+        log.info("Searching users with request: {}", request);
         Specification<AppUser> spec = Specification.unrestricted();
 
         if (request.getName() != null && !request.getName().isBlank()) {

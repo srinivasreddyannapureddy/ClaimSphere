@@ -151,6 +151,7 @@ Browser Redirect
 * ✅ Spring Security
 * ✅ Google OAuth2 Login
 * ✅ JWT + OAuth2 Integration
+* ✅ Redis Caching
 * 🚧 Cookie-based Authentication
 * ⏳ Claims Module
 * ⏳ Policy Module
@@ -168,7 +169,6 @@ Browser Redirect
 * File Upload
 * Email Notifications
 * Audit Logging
-* Redis Caching
 * Kafka Integration
 * Docker
 * Kubernetes
