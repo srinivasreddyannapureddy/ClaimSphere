@@ -46,7 +46,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST,
                                 "/auth/register",
-                                "/auth/login")
+                                "/auth/login", "/kafka/**")
                         .permitAll()
 
                         .requestMatchers("/oauth2/**","/login/**", "/api/hello")
