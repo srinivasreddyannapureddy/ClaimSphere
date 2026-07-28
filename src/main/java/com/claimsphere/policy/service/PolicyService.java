@@ -7,10 +7,13 @@ import java.util.List;
 
 public interface PolicyService {
 
-    PolicyResponseDTO create(PolicyRequestDTO dto);
+    PolicyResponseDTO createPolicy(PolicyRequestDTO requestDTO);
 
-    List<PolicyResponseDTO> getAll();
+    PolicyResponseDTO updatePolicy(Long id, PolicyRequestDTO requestDTO);
 
-    PolicyResponseDTO getById(Long id);
+    PolicyResponseDTO getPolicyById(Long id);
 
+    List<PolicyResponseDTO> getAllPolicies();
+
+    void deletePolicy(Long id);
 }

@@ -30,7 +30,5 @@ public class Customer {
 
     private String address;
 
-    @OneToMany(mappedBy = "customer")
-    @Builder.Default
-    private List<Claim> claims = new ArrayList<>();
+
 }

@@ -3,7 +3,7 @@ package com.claimsphere.customer.service;
 import com.claimsphere.customer.dto.CustomerRequestDTO;
 import com.claimsphere.customer.dto.CustomerResponseDTO;
 import com.claimsphere.customer.entity.Customer;
-import com.claimsphere.customer.mapper.CustomerMapper;
+import com.claimsphere.common.mapper.CustomerMapper;
 import com.claimsphere.customer.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

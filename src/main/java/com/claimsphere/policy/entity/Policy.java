@@ -1,6 +1,9 @@
 package com.claimsphere.policy.entity;
 
 import com.claimsphere.claim.entity.Claim;
+import com.claimsphere.customer.entity.Customer;
+import com.claimsphere.policy.enums.PolicyStatus;
+import com.claimsphere.policy.enums.PolicyType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "policies")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,10 +24,14 @@ public class Policy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique =true)
     private String policyNumber;
 
+    @Column(nullable = false)
     private String policyName;
+
+    @Enumerated(EnumType.STRING)
+    private PolicyType policyType;
 
     private LocalDate startDate;
 
@@ -33,7 +39,16 @@ public class Policy {
 
     private BigDecimal coverageAmount;
 
-    @OneToMany(mappedBy = "policy")
+    private BigDecimal premium;
+
+    @Enumerated(EnumType.STRING)
+    private PolicyStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @OneToMany(mappedBy = "policy", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Claim> claims = new ArrayList<>();
 }

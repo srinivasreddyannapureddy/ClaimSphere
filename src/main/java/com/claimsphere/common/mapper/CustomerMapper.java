@@ -1,4 +1,4 @@
-package com.claimsphere.customer.mapper;
+package com.claimsphere.common.mapper;
 
 import com.claimsphere.customer.dto.CustomerRequestDTO;
 import com.claimsphere.customer.dto.CustomerResponseDTO;

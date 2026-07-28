@@ -2,76 +2,100 @@ package com.claimsphere.policy.service;
 
 import com.claimsphere.policy.dto.PolicyRequestDTO;
 import com.claimsphere.policy.dto.PolicyResponseDTO;
+import com.claimsphere.customer.entity.Customer;
 import com.claimsphere.policy.entity.Policy;
+import com.claimsphere.policy.enums.PolicyStatus;
+import com.claimsphere.common.mapper.PolicyMapper;
+import com.claimsphere.customer.repository.CustomerRepository;
 import com.claimsphere.policy.repository.PolicyRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class PolicyServiceImpl
-        implements PolicyService {
+public class PolicyServiceImpl implements PolicyService {
 
-    private final PolicyRepository repository;
+    private final PolicyRepository policyRepository;
+    private final CustomerRepository customerRepository;
+    private final PolicyMapper policyMapper;
 
     @Override
-    public PolicyResponseDTO create(PolicyRequestDTO dto) {
+    public PolicyResponseDTO createPolicy(PolicyRequestDTO requestDTO) {
 
-        Policy policy = Policy.builder()
-                .policyNumber(dto.getPolicyNumber())
-                .policyName(dto.getPolicyName())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .coverageAmount(dto.getCoverageAmount())
-                .build();
+        Customer customer = customerRepository.findById(requestDTO.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        policy = repository.save(policy);
+        Policy policy = policyMapper.toEntity(requestDTO);
 
-        return PolicyResponseDTO.builder()
-                .id(policy.getId())
-                .policyNumber(policy.getPolicyNumber())
-                .policyName(policy.getPolicyName())
-                .startDate(policy.getStartDate())
-                .endDate(policy.getEndDate())
-                .coverageAmount(policy.getCoverageAmount())
-                .build();
+        policy.setCustomer(customer);
+
+        if (policy.getEndDate().isBefore(LocalDate.now())) {
+            policy.setStatus(PolicyStatus.EXPIRED);
+        } else {
+            policy.setStatus(PolicyStatus.ACTIVE);
+        }
+
+        Policy savedPolicy = policyRepository.save(policy);
+
+        return policyMapper.toResponseDTO(savedPolicy);
     }
 
     @Override
-    public List<PolicyResponseDTO> getAll() {
+    public PolicyResponseDTO updatePolicy(Long id, PolicyRequestDTO requestDTO) {
 
-        return repository.findAll()
+        Policy existingPolicy = policyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+        Customer customer = customerRepository.findById(requestDTO.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        existingPolicy.setPolicyNumber(requestDTO.getPolicyNumber());
+        existingPolicy.setPolicyName(requestDTO.getPolicyName());
+        existingPolicy.setPolicyType(requestDTO.getPolicyType());
+        existingPolicy.setCoverageAmount(requestDTO.getCoverageAmount());
+        existingPolicy.setPremium(requestDTO.getPremium());
+        existingPolicy.setStartDate(requestDTO.getStartDate());
+        existingPolicy.setEndDate(requestDTO.getEndDate());
+        existingPolicy.setCustomer(customer);
+
+        if (existingPolicy.getEndDate().isBefore(LocalDate.now())) {
+            existingPolicy.setStatus(PolicyStatus.EXPIRED);
+        } else {
+            existingPolicy.setStatus(PolicyStatus.ACTIVE);
+        }
+
+        Policy updatedPolicy = policyRepository.save(existingPolicy);
+
+        return policyMapper.toResponseDTO(updatedPolicy);
+    }
+
+    @Override
+    public PolicyResponseDTO getPolicyById(Long id) {
+
+        Policy policy = policyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+
+        return policyMapper.toResponseDTO(policy);
+    }
+
+    @Override
+    public List<PolicyResponseDTO> getAllPolicies() {
+
+        return policyRepository.findAll()
                 .stream()
-                .map(c -> PolicyResponseDTO.builder()
-                        .id(c.getId())
-                        .policyNumber(c.getPolicyNumber())
-                        .policyName(c.getPolicyName())
-                        .startDate(c.getStartDate())
-                        .endDate(c.getEndDate())
-                        .coverageAmount(c.getCoverageAmount())
-                        .build())
+                .map(policyMapper::toResponseDTO)
                 .toList();
     }
 
     @Override
-    public PolicyResponseDTO getById(Long id) {
+    public void deletePolicy(Long id) {
 
-        Policy c = repository.findById(id)
-                .orElseThrow();
+        Policy policy = policyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
 
-        return PolicyResponseDTO.builder()
-                .id(c.getId())
-                .coverageAmount(c.getCoverageAmount())
-                .policyName(c.getPolicyName())
-                .policyNumber(c.getPolicyNumber())
-                .startDate(c.getStartDate())
-                .endDate(c.getEndDate())
-                .build();
+        policyRepository.delete(policy);
     }
-
 }
-
