@@ -8,6 +8,7 @@ import com.claimsphere.policy.enums.PolicyStatus;
 import com.claimsphere.common.mapper.PolicyMapper;
 import com.claimsphere.customer.repository.CustomerRepository;
 import com.claimsphere.policy.repository.PolicyRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,25 +23,45 @@ public class PolicyServiceImpl implements PolicyService {
     private final CustomerRepository customerRepository;
     private final PolicyMapper policyMapper;
 
+
+    @Transactional
     @Override
-    public PolicyResponseDTO createPolicy(PolicyRequestDTO requestDTO) {
+    public List<PolicyResponseDTO> createPolicies(Long customerId, List<PolicyRequestDTO> requestDTOs) {
 
-        Customer customer = customerRepository.findById(requestDTO.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
-        Policy policy = policyMapper.toEntity(requestDTO);
-
-        policy.setCustomer(customer);
-
-        if (policy.getEndDate().isBefore(LocalDate.now())) {
-            policy.setStatus(PolicyStatus.EXPIRED);
-        } else {
-            policy.setStatus(PolicyStatus.ACTIVE);
+        if (requestDTOs == null || requestDTOs.isEmpty()) {
+            throw new IllegalArgumentException("At least one policy must be provided.");
         }
 
-        Policy savedPolicy = policyRepository.save(policy);
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        return policyMapper.toResponseDTO(savedPolicy);
+        List<Policy> policies = requestDTOs.stream()
+                .map(requestDTO -> {
+                    Policy policy = policyMapper.toEntity(requestDTO);
+
+                    customer.addPolicy(policy);
+
+                    if (policy.getEndDate().isBefore(policy.getStartDate())) {
+                        throw new IllegalArgumentException("End date cannot be before start date");
+                    }
+
+                    policy.setStatus(calculateStatus(policy.getEndDate()));
+
+                    return policy;
+                })
+                .toList();
+        List<Policy> savedPolicies = policyRepository.saveAll(policies);
+
+        return savedPolicies.stream()
+                .map(policyMapper::toResponseDTO)
+                .toList();
+
+    }
+
+    private PolicyStatus calculateStatus(LocalDate endDate) {
+        return endDate.isBefore(LocalDate.now())
+                ? PolicyStatus.EXPIRED
+                : PolicyStatus.ACTIVE;
     }
 
     @Override
@@ -49,8 +70,6 @@ public class PolicyServiceImpl implements PolicyService {
         Policy existingPolicy = policyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Policy not found"));
 
-        Customer customer = customerRepository.findById(requestDTO.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
 
         existingPolicy.setPolicyNumber(requestDTO.getPolicyNumber());
         existingPolicy.setPolicyName(requestDTO.getPolicyName());
@@ -59,13 +78,7 @@ public class PolicyServiceImpl implements PolicyService {
         existingPolicy.setPremium(requestDTO.getPremium());
         existingPolicy.setStartDate(requestDTO.getStartDate());
         existingPolicy.setEndDate(requestDTO.getEndDate());
-        existingPolicy.setCustomer(customer);
-
-        if (existingPolicy.getEndDate().isBefore(LocalDate.now())) {
-            existingPolicy.setStatus(PolicyStatus.EXPIRED);
-        } else {
-            existingPolicy.setStatus(PolicyStatus.ACTIVE);
-        }
+        existingPolicy.setStatus(calculateStatus(existingPolicy.getEndDate()));
 
         Policy updatedPolicy = policyRepository.save(existingPolicy);
 

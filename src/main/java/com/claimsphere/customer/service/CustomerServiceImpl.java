@@ -5,11 +5,13 @@ import com.claimsphere.customer.dto.CustomerResponseDTO;
 import com.claimsphere.customer.entity.Customer;
 import com.claimsphere.common.mapper.CustomerMapper;
 import com.claimsphere.customer.repository.CustomerRepository;
+import com.claimsphere.policy.entity.Policy;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +26,12 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponseDTO createCustomer(CustomerRequestDTO dto) {
 
         Customer customer = mapper.toEntity(dto);
+
+        if (customer.getPolicies() != null) {
+            customer.getPolicies()
+                    .forEach(policy -> policy.setCustomer(customer));
+        }
+
 
         repository.save(customer);
 
@@ -75,4 +83,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         repository.delete(customer);
     }
+
+
 }

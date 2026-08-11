@@ -1,5 +1,6 @@
 package com.claimsphere.policy.controller;
 
+import com.claimsphere.policy.dto.CreatePoliciesRequestDTO;
 import com.claimsphere.policy.dto.PolicyRequestDTO;
 import com.claimsphere.policy.dto.PolicyResponseDTO;
 import com.claimsphere.policy.service.PolicyService;
@@ -18,11 +19,13 @@ public class PolicyController {
 
     private final PolicyService policyService;
 
-    @PostMapping
-    public ResponseEntity<PolicyResponseDTO> createPolicy(
-            @Valid @RequestBody PolicyRequestDTO requestDTO) {
+    @PostMapping("/customers/{customerId}")
+    public ResponseEntity<List<PolicyResponseDTO>> createPolicies(
+            @PathVariable Long customerId,
+            @RequestBody CreatePoliciesRequestDTO request) {
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(policyService.createPolicy(requestDTO));
+                .body(policyService.createPolicies(customerId, request.getPolicies()));
     }
 
     @GetMapping("/{id}")

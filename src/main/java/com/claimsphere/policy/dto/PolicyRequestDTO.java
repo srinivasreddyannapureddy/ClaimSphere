@@ -37,6 +37,4 @@ public class PolicyRequestDTO {
     @DecimalMin(value = "0.0", inclusive = false, message = "Premium must be greater than zero")
     private BigDecimal premium;
 
-    @NotNull(message = "Customer Id is required")
-    private Long customerId;
 }

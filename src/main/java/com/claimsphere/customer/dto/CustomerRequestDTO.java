@@ -1,9 +1,13 @@
 package com.claimsphere.customer.dto;
 
+import com.claimsphere.policy.dto.PolicyRequestDTO;
+import com.claimsphere.policy.dto.PolicyResponseDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CustomerRequestDTO {
@@ -23,4 +27,6 @@ public class CustomerRequestDTO {
 
     @NotBlank(message = "Address is required")
     private String address;
+
+    private List<PolicyRequestDTO> policies;
 }

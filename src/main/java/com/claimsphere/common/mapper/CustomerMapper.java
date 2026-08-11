@@ -8,7 +8,8 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        uses = PolicyMapper.class)
 public interface CustomerMapper {
 
     Customer toEntity(CustomerRequestDTO dto);
