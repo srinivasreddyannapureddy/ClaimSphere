@@ -7,7 +7,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -84,6 +86,38 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(PolicyServiceUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handlePolicyServiceUnavailable(
+            PolicyServiceUnavailableException ex) {
+
+        Map<String, Object> response = Map.of(
+                "status", 503,
+                "error", "Service Unavailable",
+                "message", ex.getMessage(),
+                "timestamp", LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(response);
+    }
+
+    @ExceptionHandler(PolicyNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handlePolicyNotFound(
+            PolicyNotFoundException ex) {
+
+        Map<String, Object> response = Map.of(
+                "status", 404,
+                "error", "Not Found",
+                "message", ex.getMessage(),
+                "timestamp", LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
 }

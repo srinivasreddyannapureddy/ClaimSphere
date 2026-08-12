@@ -213,3 +213,9 @@ Java | Spring Boot | REST APIs | SQL Server | Spring Security | OAuth2 | JWT
 ## License
 
 This project is for learning, portfolio, and demonstration purposes.
+---
+## Useful Debugging Links
+http://<host>:<port>/actuator/metrics/resilience4j.circuitbreaker.state?tag=name:policyService&tag=state:<half_open/open/closed>
+
+http://<host>:<port>/actuator/metrics/resilience4j.circuitbreaker.calls?tag=name:policyService&tag=kind:failed
+http://<host>:<port>/actuator/metrics/resilience4j.circuitbreaker.calls
